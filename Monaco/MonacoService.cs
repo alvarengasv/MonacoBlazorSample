@@ -58,7 +58,7 @@ $@"using System;
                  
 namespace {nameof(OneDas)}.{nameof(DataManagement)}
 {{
-    static class Program 
+    class Program 
     {{               
         static void Main() 
         {{ 

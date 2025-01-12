@@ -145,7 +145,7 @@ namespace OneDas.DataManagement.Omnisharp
                 return new CompletionResponse { Items = ImmutableArray<CompletionItem>.Empty };
             }
 
-            var (completions, expandedItemsAvailable) = await completionService.GetCompletionsInternalAsync(
+            var completions = await completionService.GetCompletionsAsync(
                 document,
                 position,
                 getCompletionTrigger(includeTriggerCharacter: false));
@@ -187,7 +187,7 @@ namespace OneDas.DataManagement.Omnisharp
             // editor will ask again when the user types more. By then, hopefully the cache will have populated and we can mark
             // the completion as done.
             bool seenUnimportedCompletions = false;
-            bool expectingImportedItems = expandedItemsAvailable && _workspace.Options.GetOption(CompletionItemExtensions.ShowItemsFromUnimportedNamespaces, LanguageNames.CSharp) == true;
+            bool expectingImportedItems = _workspace.Options.GetOption(CompletionItemExtensions.ShowItemsFromUnimportedNamespaces, LanguageNames.CSharp) == true;
             var syntax = await document.GetSyntaxTreeAsync();
 
             var replacingSpanStartPosition = sourceText.Lines.GetLinePosition(typedSpan.Start);

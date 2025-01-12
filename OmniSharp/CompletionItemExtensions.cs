@@ -61,23 +61,12 @@ namespace OneDas.DataManagement.Omnisharp
 
             _getProviderName = typeof(CompletionItem).GetProperty(ProviderName, BindingFlags.NonPublic | BindingFlags.Instance);
 
-            _getCompletionsInternalAsync = typeof(Microsoft.CodeAnalysis.Completion.CompletionService).GetMethod(nameof(GetCompletionsInternalAsync), BindingFlags.NonPublic | BindingFlags.Instance);
             _getChangeAsync = typeof(Microsoft.CodeAnalysis.Completion.CompletionService).GetMethod(nameof(GetChangeAsync), BindingFlags.NonPublic | BindingFlags.Instance);
         }
 
         internal static string GetProviderName(this CompletionItem item) => (string)_getProviderName.GetValue(item);
 
         public static bool IsObjectCreationCompletionItem(this CompletionItem item) => GetProviderName(item) == ObjectCreationCompletionProvider;
-
-        public static Task<(CompletionList completionList, bool expandItemsAvailable)> GetCompletionsInternalAsync(
-            this Microsoft.CodeAnalysis.Completion.CompletionService completionService,
-            Document document,
-            int caretPosition,
-            CompletionTrigger trigger = default,
-            ImmutableHashSet<string> roles = null,
-            OptionSet options = null,
-            CancellationToken cancellationToken = default)
-            => (Task<(CompletionList completionList, bool expandItemsAvailable)>)_getCompletionsInternalAsync.Invoke(completionService, new object[] { document, caretPosition, trigger, roles, options, cancellationToken });
 
         internal static Task<CompletionChange> GetChangeAsync(
             this Microsoft.CodeAnalysis.Completion.CompletionService completionService,
