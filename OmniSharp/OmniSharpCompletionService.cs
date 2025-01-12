@@ -354,7 +354,7 @@ namespace OneDas.DataManagement.Omnisharp
                     FilterText = completion.FilterText,
                     Kind = getCompletionItemKind(completion.Tags),
                     Detail = completion.InlineDescription,
-                    Data = i,
+                    Data = (0, i),
                     Preselect = completion.Rules.MatchPriority == MatchPriority.Preselect || filteredItems.Contains(completion.DisplayText),
                     CommitCharacters = commitCharacters,
                 });
@@ -476,14 +476,14 @@ namespace OneDas.DataManagement.Omnisharp
             var (completions, fileName, position) = _lastCompletion.Value;
 
             if (request.Item is null
-                || request.Item.Data >= completions.Items.Length
-                || request.Item.Data < 0)
+                || request.Item.Data.Index >= completions.Items.Length
+                || request.Item.Data.Index < 0)
             {
                 _logger.LogError("Received invalid completion resolve!");
                 return new CompletionResolveResponse { Item = request.Item };
             }
 
-            var lastCompletionItem = completions.Items[request.Item.Data];
+            var lastCompletionItem = completions.Items[request.Item.Data.Index];
             if (lastCompletionItem.DisplayTextPrefix + lastCompletionItem.DisplayText + lastCompletionItem.DisplayTextSuffix != request.Item.Label)
             {
                 _logger.LogError($"Inconsistent completion data. Requested data on {request.Item.Label}, but found completion item {lastCompletionItem.DisplayText}");
