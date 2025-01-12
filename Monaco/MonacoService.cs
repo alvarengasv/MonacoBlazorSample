@@ -58,9 +58,9 @@ $@"using System;
                  
 namespace {nameof(OneDas)}.{nameof(DataManagement)}
 {{
-    class Filter 
+    static class Program 
     {{               
-        public Filter() 
+        static void Main() 
         {{ 
             
         }}
