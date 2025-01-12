@@ -25,7 +25,7 @@ namespace OneDas.DataManagement.Monaco
                     MetadataReference.CreateFromFile(filePath, documentation: documentationProvider)
                 })
                 .WithCompilationOptions(new CSharpCompilationOptions(OutputKind.ConsoleApplication))
-                .WithParseOptions(CSharpParseOptions.Default.WithLanguageVersion(LanguageVersion.CSharp9));
+                .WithParseOptions(CSharpParseOptions.Default.WithLanguageVersion(LanguageVersion.Latest));
 
             var project = this.Workspace.AddProject(projectInfo);
 
