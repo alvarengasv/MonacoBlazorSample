@@ -3,7 +3,7 @@
 @inject IJSRuntime JS;
 @inject MonacoService MonacoService;
 
-<MonacoEditor @ref="_editor" ConstructionOptions="EditorConstructionOptions" OnDidChangeModelContent="OnDidChangeModelContent" />
+<StandaloneCodeEditor @ref="_editor" ConstructionOptions="EditorConstructionOptions" OnDidChangeModelContent="OnDidChangeModelContent" />
 
 @if (this.Diagnostics is not null)
 {
@@ -16,11 +16,11 @@
 @code {
 
     private bool _hasRegistered = false;
-    private MonacoEditor _editor;
+    private StandaloneCodeEditor _editor;
     private DotNetObjectReference<MonacoService> _objRef;
     private List<MonacoService.Diagnostic> Diagnostics { get; set; }
 
-    private StandaloneEditorConstructionOptions EditorConstructionOptions(MonacoEditor editor)
+    private StandaloneEditorConstructionOptions EditorConstructionOptions(StandaloneCodeEditor editor)
     {
         return new StandaloneEditorConstructionOptions
         {
@@ -31,7 +31,7 @@
         };
     }
 
-    private async Task OnDidChangeModelContent(ModelContentChangedEvent e)
+    private async void OnDidChangeModelContent(ModelContentChangedEvent e)
     {
         var uri = (await _editor.GetModel()).Uri;
         var code = await _editor.GetValue();
