@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Reflection;
 using System.Text;
@@ -19,15 +20,8 @@ namespace OneDas.DataManagement.Monaco
     {
         public RoslynProject()
         {
-            var systemRuntimeAssembly = Assembly.Load("System.Runtime");
-            var systemCollectionsAssembly = Assembly.Load("System.Collections");
-            var linqAssembly = Assembly.Load("System.Linq.Queryable");
-            var coreAssembly = Assembly.Load("System.Core");
             var assemblies = MefHostServices.DefaultAssemblies;
-            assemblies.Add(systemRuntimeAssembly);
-            assemblies.Add(systemCollectionsAssembly);
-            assemblies.Add(linqAssembly);
-            assemblies.Add(coreAssembly);
+            var systemRuntimeAssembly = Assembly.Load("System.Runtime");
 
             // Documentation providers
             var documentationProvider = XmlDocumentationProvider.CreateFromFile(@"./Resources/System.Runtime.xml");
@@ -35,11 +29,13 @@ namespace OneDas.DataManagement.Monaco
             // Metadata references
             var metaReferences = new List<PortableExecutableReference>()
             {
-                MetadataReference.CreateFromFile(typeof(object).Assembly.Location, documentation: documentationProvider),
-                MetadataReference.CreateFromFile(systemRuntimeAssembly.Location),
-                MetadataReference.CreateFromFile(systemCollectionsAssembly.Location),
-                MetadataReference.CreateFromFile(coreAssembly.Location)
+                MetadataReference.CreateFromFile(systemRuntimeAssembly.Location, documentation: documentationProvider),
             };
+
+            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies().Where(x => x != null && x.Location != systemRuntimeAssembly.Location && x.Location.IndexOf($"dotnet{Path.DirectorySeparatorChar}shared") != -1 && x.Location.IndexOf("AspNetCore") == -1))
+            {
+                metaReferences.Add(MetadataReference.CreateFromFile(assembly.Location));
+            }
 
             var customPath = Path.GetFullPath("./Resources/Custom");
             if (Directory.Exists(customPath))
@@ -50,8 +46,6 @@ namespace OneDas.DataManagement.Monaco
                     var xmlFile = new FileInfo(Path.Combine("./Resources/Custom", Path.GetFileNameWithoutExtension(dllFile.Name) + ".xml"));
                     var metadataReference = MetadataReference.CreateFromFile(dllFile.FullName, documentation: xmlFile.Exists ? XmlDocumentationProvider.CreateFromFile(xmlFile.FullName) : null);
                     metaReferences.Add(metadataReference);
-
-                    assemblies.Add(Assembly.LoadFile(file));
                 }
             }
 
