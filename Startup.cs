@@ -22,7 +22,8 @@ namespace OneDas.DataManagement
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddRazorPages();
-            services.AddServerSideBlazor();
+            services.AddRazorComponents()
+                .AddInteractiveServerComponents();
 
             services.AddScoped<MonacoService>();
         }
@@ -45,12 +46,11 @@ namespace OneDas.DataManagement
             app.UseStaticFiles();
 
             app.UseRouting();
-
+            app.UseAntiforgery();
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllers();
-                endpoints.MapBlazorHub();
-                endpoints.MapFallbackToPage("/_Host");
+                endpoints.MapRazorComponents<App>()
+                    .AddInteractiveServerRenderMode();
             });
         }
     }
